@@ -12,6 +12,7 @@ env:
     - JHIPSTER_VERSION=latest YEOMAN_VERSION=latest
 install:
   - npm install
+  - npm uninstall generator-jhipster
   - npm install generator-jhipster@$JHIPSTER_VERSION yeoman-generator@$YEOMAN_VERSION
 addons:
   apt:
