@@ -1,4 +1,3 @@
-'use strict';
 var util = require('util');
 var generator = require('yeoman-generator');
 var chalk = require('chalk');
@@ -21,28 +20,23 @@ try {
 
 var JhipsterGenerator;
 
-if (generator.extend) {
-  JhipsterGenerator = generator.extend({});
-} else {
-  JhipsterGenerator = generator.Base.extend({});
-}
-
-util.inherits(JhipsterGenerator, BaseGenerator);
-
 // Stores JHipster variables
 var jhipsterVar = {moduleName: 'elasticsearch-reindexer'};
 jhipsterVar.jhipsterConfigDirectory = '.jhipster';
 
-module.exports = JhipsterGenerator.extend({
-  initializing: {
-    displayLogo: function () {
+module.exports = class extends BaseGenerator {
+  get initializing() {
+    return {
+    displayLogo () {
       // Have Yeoman greet the user.
       this.log('Welcome to the ' + chalk.red('JHipster elasticsearch-reindexer') + ' generator! ' + chalk.yellow('v' + packagejs.version + '\n'));
     }
-  },
+    };
+  }
 
-  writing: {
-    setUpVars: function () {
+  get writing() {
+    return {
+    setUpVars () {
       var config = getConfig(this);
       this.applicationType = config.applicationType;
       this.nativeLanguage = config.nativeLanguage;
@@ -106,7 +100,7 @@ module.exports = JhipsterGenerator.extend({
         return false;
       }
     },
-    validateVars: function () {
+    validateVars () {
       if (!this.jhipsterVersion) {
         this.log(chalk.yellow('WARNING jhipsterVersion is missing in JHipster configuration, defaulting to v2'));
       }
@@ -149,7 +143,7 @@ module.exports = JhipsterGenerator.extend({
         this.skipUserManagement = false;
       }
     },
-    writeTemplates: function () {
+    writeTemplates () {
       if (!this.skipServer) {
         this.template('src/main/java/package/web/rest/_ElasticsearchIndexResource.java', jhipsterVar.javaDir + 'web/rest/ElasticsearchIndexResource.java', this, {});
         this.template('src/main/java/package/service/_ElasticsearchIndexService.java', jhipsterVar.javaDir + 'service/ElasticsearchIndexService.java', this, {});
@@ -225,16 +219,21 @@ module.exports = JhipsterGenerator.extend({
       }
     },
 
-    registering: function () {
+    registering () {
       try {
         this.registerModule('generator-jhipster-elasticsearch-reindexer', 'entity', 'post', 'app', 'Generate a service for reindexing all database rows for each of your entities');
       } catch (err) {
         this.log(chalk.red.bold('WARN!') + ' Could not register as a jhipster entity post creation hook...\n');
       }
     }
-  },
-
-  end: function () {
-    this.log('End of elasticsearch-reindexer generator');
+};
   }
-});
+
+  get end () {
+    return {
+      localInstall() {
+	this.log('End of elasticsearch-reindexer generator');
+      }
+    }
+  }
+};
